@@ -22,7 +22,7 @@ function varargout = mousePicker(varargin)
 
 % Edit the above text to modify the response to help mousePicker
 
-% Last Modified by GUIDE v2.5 01-Oct-2014 18:52:13
+% Last Modified by GUIDE v2.5 04-Oct-2014 16:13:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -106,12 +106,17 @@ function open_Callback(hObject, eventdata, handles)
 
 % --- Executes on mouse press over axes background.
 function canvas_ButtonDownFcn(hObject, eventdata, handles)
-pos = get(handles.canvas,'CurrentPoint');
-posx = pos(1);
-disp(posx)
+
 % hObject    handle to canvas (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 
-
+% --- Executes on mouse press over figure background.
+function figure1_ButtonDownFcn(hObject, eventdata, handles)
+pos = get(handles.figure1,'CurrentPoint');
+posx = pos(1);
+disp(posx)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
