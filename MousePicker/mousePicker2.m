@@ -1,29 +1,4 @@
 function varargout = mousePicker2(varargin)
-% MOUSEPICKER2 MATLAB code for mousePicker2.fig
-%      MOUSEPICKER2, by itself, creates a new MOUSEPICKER2 or raises the existing
-%      singleton*.
-%
-%      H = MOUSEPICKER2 returns the handle to a new MOUSEPICKER2 or the handle to
-%      the existing singleton*.
-%
-%      MOUSEPICKER2('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in MOUSEPICKER2.M with the given input arguments.
-%
-%      MOUSEPICKER2('Property','Value',...) creates a new MOUSEPICKER2 or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before mousePicker2_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to mousePicker2_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
-
-% Edit the above text to modify the response to help mousePicker2
-
-% Last Modified by GUIDE v2.5 04-Oct-2014 23:00:34
-
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
@@ -46,32 +21,18 @@ end
 
 % --- Executes just before mousePicker2 is made visible.
 function mousePicker2_OpeningFcn(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to mousePicker2 (see VARARGIN)
-
-% Choose default command line output for mousePicker2
 handles.output = hObject;
-
-% Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes mousePicker2 wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
-
+set(handles.langlist,'Enable','off');
+set(handles.langaccept,'Enable','off');
+set(handles.original,'Visible','off');
+set(handles.cropped,'Visible','off');
+set(handles.next,'Enable','off');
 
 % --- Outputs from this function are returned to the command line.
 function varargout = mousePicker2_OutputFcn(hObject, eventdata, handles) 
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Get default command line output from handles structure
 varargout{1} = handles.output;
-
 
 % --- Executes on button press in open.
 function open_Callback(hObject, eventdata, handles)
@@ -82,6 +43,10 @@ image = im2bw(image, 0.60);
 image = ~(image);
 image = bwareaopen(image, 10);
 
+set(handles.original,'Visible','on');
+set(handles.cropped,'Visible','on');
+set(handles.next,'Enable','on');
+
 % show image on imshow
 axes(handles.original);
 imshow(image)
@@ -89,31 +54,15 @@ handles.image = image;
 guidata(hObject,handles);
 
 set(handles.langlist,'Enable','off');
-
-
-% hObject    handle to open (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+set(handles.langaccept,'Enable','off');
 
 
 
 function filename_Callback(hObject, eventdata, handles)
-% hObject    handle to filename (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of filename as text
-%        str2double(get(hObject,'String')) returns contents of filename as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function filename_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to filename (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -121,22 +70,10 @@ end
 
 % --- Executes on selection change in langlist.
 function langlist_Callback(hObject, eventdata, handles)
-% hObject    handle to langlist (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns langlist contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from langlist
-
 
 % --- Executes during object creation, after setting all properties.
 function langlist_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to langlist (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: listbox controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -158,21 +95,28 @@ end
 
 tmppath = mfilename('fullpath');
 tmpdir1 = fileparts(tmppath);
-filenamechoice = get(handles.outfile,'String');
+fllist = dir(strcat(tmpdir1,'\',langname));
+lastfile = fllist(length(fllist));
+lastfilename = lastfile.name;
+if strcmp(lastfilename,'..')
+    lastfilename = '1';
+else
+    lastfilenumber = str2num(fname(lastfilename));
+    lastfilenumber = lastfilenumber +1;
+    lastfilename = num2str(lastfilenumber);
+end
 
-folderselect = strcat(tmpdir1,'\',langname,'\',filenamechoice,'.tif');
+
+folderselect = strcat(tmpdir1,'\',langname,'\',strcat(lastfilename,'.tif'));
 imwrite(selected,folderselect,'tif');
 
-% hObject    handle to langaccept (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+set(handles.outfilename,'String',strcat(lastfilename,'.tif'));
 
+set(handles.langlist,'Enable','off');
+set(handles.langaccept,'Enable','off');
 
 % --- Executes on button press in next.
 function next_Callback(hObject, eventdata, handles)
-% hObject    handle to next (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % show image on imshow
 axes(handles.original);
@@ -203,36 +147,19 @@ if ((pos2x>pos1x) && (pos2y>pos1y))
     imshow(selected)
     handles.selected = selected;
     guidata(hObject,handles);
-    % DO SOMETHING FOR STORING THE SELECTED PART
-
-
-    % DO SOMETHING FOR STORING THE SELECTED PART
-%        end
     clear selected
+    set(handles.langlist,'Enable','on');
+    set(handles.langaccept,'Enable','on');
 else
-    disp('Try to drag from upper-left to lower-bottom');
+    errordlg(...
+        'Try to make the selection from Upper-Right to Bottom-Left','Wrong selection');
 end
-set(handles.langlist,'Enable','on');
-
-
 
 function outfile_Callback(hObject, eventdata, handles)
-% hObject    handle to outfile (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of outfile as text
-%        str2double(get(hObject,'String')) returns contents of outfile as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function outfile_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to outfile (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
 
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
