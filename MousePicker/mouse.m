@@ -17,7 +17,10 @@ sizeHW = size(image);
 sizeH = sizeHW(1);
 sizeW = sizeHW(2);
 
-while 1
+% a boolean variable
+quit = 0;
+
+while ~quit
     % show image on imshow
     imshow(image)
 
@@ -30,7 +33,6 @@ while 1
 
     % Selected area validity check
     if ((pos2x>pos1x) && (pos2y>pos1y))
-        %disp('Its alright');
         selected = zeros(pos2y - pos1y,pos2x - pos1x);
         col = 1;
         row = 1;
@@ -44,11 +46,14 @@ while 1
         end
         imshow(selected)
         ask = input('Enter the language : ','s');
+        if strcmp(ask,'quit')
+            quit = 1;
+        else
         % DO SOMETHING FOR STORING THE SELECTED PART
-
-        
+                    
 
         % DO SOMETHING FOR STORING THE SELECTED PART
+        end
         clear selected
     else
         disp('Try to drag from upper-left to lower-bottom');
