@@ -38,6 +38,9 @@ varargout{1} = handles.output;
 function open_Callback(hObject, eventdata, handles)
 
 impath = get(handles.filename,'String');
+filex = exist(impath);
+
+
 image = imread(impath);
 image = im2bw(image, 0.60);
 image = ~(image);
@@ -47,6 +50,7 @@ set(handles.original,'Visible','on');
 
 set(handles.next,'Enable','on');
 
+
 % show image on imshow
 axes(handles.original);
 imshow(image)
@@ -55,7 +59,6 @@ guidata(hObject,handles);
 
 set(handles.langlist,'Enable','off');
 set(handles.langaccept,'Enable','off');
-
 
 
 function filename_Callback(hObject, eventdata, handles)
