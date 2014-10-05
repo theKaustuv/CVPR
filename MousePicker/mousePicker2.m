@@ -44,7 +44,7 @@ image = ~(image);
 image = bwareaopen(image, 10);
 
 set(handles.original,'Visible','on');
-set(handles.cropped,'Visible','on');
+
 set(handles.next,'Enable','on');
 
 % show image on imshow
@@ -123,12 +123,17 @@ axes(handles.original);
 image = handles.image;
 imshow(image)
 
+set(handles.outfilename,'String','');
+
+
 % wait for two clicks & get the position info
 recorded = ginput(2);   % the recorded click-info
 pos1x = floor(recorded(1,1));  % 1st position - X coordinate
 pos1y = floor(recorded(1,2));  % 1st position - Y coordinate
 pos2x = floor(recorded(2,1));  % 2nd position - X coordinate
 pos2y = floor(recorded(2,2));  % 2nd position - Y coordinate
+
+set(handles.cropped,'Visible','on');
 
 % Selected area validity check
 if ((pos2x>pos1x) && (pos2y>pos1y))
@@ -152,8 +157,10 @@ if ((pos2x>pos1x) && (pos2y>pos1y))
     set(handles.langaccept,'Enable','on');
 else
     errordlg(...
-        'Try to make the selection from Upper-Right to Bottom-Left','Wrong selection');
+        'Try to make the selection from Upper-Left to Lower-Right',...
+        'Wrong selection pattern');
 end
+
 
 function outfile_Callback(hObject, eventdata, handles)
 
