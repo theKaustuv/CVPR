@@ -160,6 +160,10 @@ pos1y = floor(recorded(1,2));  % 1st position - Y coordinate
 pos2x = floor(recorded(2,1));  % 2nd position - X coordinate
 pos2y = floor(recorded(2,2));  % 2nd position - Y coordinate
 
+
+
+
+
 set(handles.c1x,'String',pos1x);
 set(handles.c1y,'String',pos1y);
 set(handles.c2x,'String',pos2x);
