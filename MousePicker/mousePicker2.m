@@ -94,30 +94,6 @@ switch selection
         langname = 'BE';
     case 3
         langname = 'HI';
-    case 4
-        langname = 'AS';
-    case 5
-        langname = 'TA';
-    case 6
-        langname = 'TE';
-     case 7
-        langname = 'MA';
-    case 8
-        langname = 'GM';
-    case 9
-        langname = 'GR';
-    case 10
-        langname = 'OR';
-    case 11
-        langname = 'KA';
-    case 12
-        langname = 'UR';
-    case 13
-        langname = 'CO';
-    case 14
-        langname = 'ER';
-    
-        
 end
 
 tmppath = mfilename('fullpath');
@@ -160,12 +136,7 @@ pos1y = floor(recorded(1,2));  % 1st position - Y coordinate
 pos2x = floor(recorded(2,1));  % 2nd position - X coordinate
 pos2y = floor(recorded(2,2));  % 2nd position - Y coordinate
 
-set(handles.c1x,'String',pos1x);
-set(handles.c1y,'String',pos1y);
-set(handles.c2x,'String',pos2x);
-set(handles.c2y,'String',pos2y);
-
-%set(handles.cropped,'Visible','on');
+set(handles.cropped,'Visible','on');
 
 % Selected area validity check
 if ((pos2x>pos1x) && (pos2y>pos1y))
