@@ -7,7 +7,7 @@ previous = 0;
 startline = [];
 endline = [];
 
-img = imread('C:\Users\Spider\Desktop\MATLAB\PatternRecognization\Test_Images\6.tif');
+img = imread('C:\Users\Spider\Desktop\CVPR\Word Segmentation\Test_Images\6.tif');
 original = img;
 sizeHW = size(img);  %get the size matrix of the image
 sizeH = sizeHW(1);  % get Height - from the sizeHW
@@ -29,7 +29,24 @@ for colindex = 2:sizeH
     end
 end
 
-%imshow(original)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%line validity check
+linethickness = 10;
+validstart = [];
+validend = [];
+for n = 1:length(startline) % OR it can be endline also
+    if (endline(n)-startline(n))>linethickness
+        validstart = [validstart startline(n)];
+        validend = [validend endline(n)];
+    end
+end
+startline = validstart;
+endline = validend;
+clear validstart
+clear validend
+% invalid lines sorted out
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 tlinenum = size(startline);
 inlinesum = 0;
 prevmark = 0;
