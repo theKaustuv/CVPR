@@ -29,6 +29,7 @@ set(handles.langaccept,'Enable','off');
 set(handles.original,'Visible','off');
 set(handles.cropped,'Visible','off');
 set(handles.next,'Enable','off');
+set(handles.singlescript,'Enable','off');
 
 % --- Outputs from this function are returned to the command line.
 function varargout = mousePicker2_OutputFcn(hObject, eventdata, handles) 
@@ -47,8 +48,10 @@ elseif existance==2
     image = ~(image);
     image = bwareaopen(image, 10);
 
+    
     set(handles.original,'Visible','on');
     set(handles.next,'Enable','on');
+    set(handles.singlescript,'Enable','on');
 
 
     % show image on imshow
@@ -161,10 +164,6 @@ pos1y = floor(recorded(1,2));  % 1st position - Y coordinate
 pos2x = floor(recorded(2,1));  % 2nd position - X coordinate
 pos2y = floor(recorded(2,2));  % 2nd position - Y coordinate
 
-
-
-
-
 set(handles.c1x,'String',pos1x);
 set(handles.c1y,'String',pos1y);
 set(handles.c2x,'String',pos2x);
@@ -222,3 +221,115 @@ searchpath = strcat(tmpdir1,'\*.tif');
 if ischar(file)
     set(handles.filename,'String',strcat(path,file));
 end
+
+
+% --- Executes on button press in singlescript.
+function singlescript_Callback(hObject, eventdata, handles)
+% handles.image visible from here
+
+img = handles.image;
+previous = 0;
+startline = [];
+endline = [];
+
+original = img;
+sizeHW = size(img);  %get the size matrix of the image
+sizeH = sizeHW(1);  % get Height - from the sizeHW
+sizeW = sizeHW(2);  % get Width - from the sizeHW
+
+for colindex = 2:sizeH
+    if ((sum(img(colindex,:)')== 0) && (previous == 1)) % blank line
+        previous = 0;
+        endline = [endline colindex];
+        original(colindex,:) = zeros(1,sizeW);
+    elseif (sum(img(colindex,:)') ~= 0) && (previous == 0) %got some letters
+        previous = 1;
+        startline = [startline colindex-1];
+        original(colindex-1,:) = zeros(1,sizeW);
+    elseif (sum(img(colindex,:)') ~= 0) && (previous ==1) && (colindex==sizeH)
+        previous = 0;
+        endline = [endline colindex];
+        original(colindex,:) = zeros(1,sizeW);
+    end
+end
+
+%line validity check
+linethickness = 10;
+validstart = [];
+validend = [];
+for n = 1:length(startline) % OR it can be endline also
+    if (endline(n)-startline(n))>linethickness
+        validstart = [validstart startline(n)];
+        validend = [validend endline(n)];
+    end
+end
+startline = validstart;
+endline = validend;
+clear validstart
+clear validend
+% invalid lines sorted out
+
+
+tlinenum = size(startline);
+inlinesum = 0;
+prevmark = 0;
+gapping = 0;
+threshold = 7;
+linethreshold = 5;
+
+wordpos = [];
+wordnumperline = 0;
+wordnumperlinearray = [];
+
+for totalline = 1:tlinenum(2)
+    for rowwise = 1:sizeW
+        for inline = startline(totalline)+1:endline(totalline)-1
+            inlinesum = inlinesum + img(inline,rowwise);
+        end
+        % word seg marking should be done here
+        if inlinesum~=0 && prevmark==0
+            for inline = startline(totalline)+1:endline(totalline)-1
+                original(inline,rowwise-1) = 0 ;
+            end
+            %mark the start of a word
+            wordpos = [wordpos rowwise];
+            prevmark = 1;
+        elseif inlinesum==0 && prevmark==1 && gapping<threshold            
+            % mark the end of word
+            if rowwise < (sizeW-linethreshold)
+                gapping = gapping + 1;
+                prevmark = 1;
+            else
+                for inline = startline(totalline)+1:endline(totalline)-1
+                    original(inline,rowwise) = 0 ;
+                end
+                wordpos = [wordpos rowwise];
+                wordnumperline = wordnumperline + 1;
+                gapping = 0;
+                prevmark = 0;
+                %almost END OF LINE
+            end
+        elseif inlinesum==0 && prevmark==1 && gapping==threshold
+            for inline = startline(totalline)+1:endline(totalline)-1
+                original(inline,rowwise-threshold) = 0 ;
+            end 
+            wordpos = [wordpos rowwise];
+            wordnumperline = wordnumperline + 1;
+            gapping = 0;
+            prevmark = 0;
+        elseif inlinesum~=0 && prevmark==1
+            gapping = 0;
+            prevmark = 1;
+        end
+        % marking done goto next 'rowwise'
+        inlinesum = 0;
+    end
+    wordnumperlinearray = [wordnumperlinearray wordnumperline];
+    wordnumperline = 0;
+    %wordpos
+    gapping = 0;
+    prevmark = 0;
+end
+
+% wordpos
+% wordnumperlinearray
