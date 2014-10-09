@@ -38,27 +38,28 @@ varargout{1} = handles.output;
 function open_Callback(hObject, eventdata, handles)
 
 impath = get(handles.filename,'String');
-filex = exist(impath);
+existance = exist(impath);
+if existance==0
+    errordlg('Please Insert a valid filename','Filename Invalid');
+elseif existance==2
+    image = imread(impath);
+    image = im2bw(image, 0.60);
+    image = ~(image);
+    image = bwareaopen(image, 10);
+
+    set(handles.original,'Visible','on');
+    set(handles.next,'Enable','on');
 
 
-image = imread(impath);
-image = im2bw(image, 0.60);
-image = ~(image);
-image = bwareaopen(image, 10);
+    % show image on imshow
+    axes(handles.original);
+    imshow(image)
+    handles.image = image;
+    guidata(hObject,handles);
 
-set(handles.original,'Visible','on');
-
-set(handles.next,'Enable','on');
-
-
-% show image on imshow
-axes(handles.original);
-imshow(image)
-handles.image = image;
-guidata(hObject,handles);
-
-set(handles.langlist,'Enable','off');
-set(handles.langaccept,'Enable','off');
+    set(handles.langlist,'Enable','off');
+    set(handles.langaccept,'Enable','off');
+end
 
 
 function filename_Callback(hObject, eventdata, handles)
@@ -205,4 +206,19 @@ function outfile_CreateFcn(hObject, eventdata, handles)
 
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in browse.
+function browse_Callback(hObject, eventdata, handles)
+% hObject    handle to browse (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+tmppath = mfilename('fullpath');
+tmpdir1 = fileparts(tmppath);
+searchpath = strcat(tmpdir1,'\*.tif');
+[file,path] = uigetfile({'*.tif';'*.png';'*.jpg';'*.gif';'*.bmp'},...
+    'Choose a Script image',searchpath);
+if ischar(file)
+    set(handles.filename,'String',strcat(path,file));
 end
