@@ -137,14 +137,12 @@ else
     lastfilename = num2str(lastfilenumber);
 end
 
-
 folderselect = strcat(tmpdir1,'\',langname,'\',strcat(lastfilename,'.tif'));
 imwrite(selected,folderselect,'tif');
 
 set(handles.outfilename,'String',strcat(lastfilename,'.tif'));
 
-set(handles.langlist,'Enable','off');
-set(handles.langaccept,'Enable','off');
+set(handles.langaccept,'TooltipString','tools');
 
 % --- Executes on button press in next.
 function next_Callback(hObject, eventdata, handles)
@@ -286,6 +284,9 @@ end
 function singlescript_Callback(hObject, eventdata, handles)
 % handles.image visible from here
 
+set(handles.langlist,'Enable','on');
+set(handles.langaccept,'Enable','on');
+
 img = handles.image;
 previous = 0;
 startline = [];
@@ -390,5 +391,29 @@ for totalline = 1:tlinenum(2)
     prevmark = 0;
 end
 
-% wordpos
-% wordnumperlinearray
+worditer = 1;
+
+for lineiter = 1:tlinenum(2)
+    for rowiter = 1:wordnumperlinearray(lineiter)
+        c = 1;
+        r = 1;
+        selected = [];
+        for hlrow = wordpos(worditer):wordpos(worditer+1)
+            for hlcol = startline(lineiter):endline(lineiter)
+                selected(c,r) = img(hlcol,hlrow);
+                c = c + 1;
+            end
+            r = r + 1;
+            c = 1;
+        end
+%        clear selected;
+        handles.selected = selected;
+        guidata(hObject,handles);
+        axes(handles.cropped);
+        imshow(selected)
+        % WAITFOR LANGACCEPT TO BE CALLED
+        waitfor(handles.langaccept,'TooltipString','tools');
+        set(handles.langaccept,'TooltipString','tool');
+        worditer = worditer + 2;
+    end
+end
