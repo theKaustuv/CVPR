@@ -236,9 +236,7 @@ crop_selected=zeros((end_row-start_row),(end_column-start_column));
         row = row + 1;
         col = 1;
     end
- axes(handles.cropped);
- imshow(crop_selected);
- selected=crop_selected;
+selected=crop_selected;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     axes(handles.cropped);
