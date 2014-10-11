@@ -243,6 +243,7 @@ crop_selected=zeros((end_row-start_row),(end_column-start_column));
     
     axes(handles.cropped);
     imshow(selected)
+
     handles.selected = selected;
     guidata(hObject,handles);
     clear selected
