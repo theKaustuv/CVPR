@@ -126,21 +126,24 @@ end
 
 tmppath = mfilename('fullpath');
 tmpdir1 = fileparts(tmppath);
-fllist = dir(strcat(tmpdir1,'\',langname));
-lastfile = fllist(length(fllist));
-lastfilename = lastfile.name;
-if strcmp(lastfilename,'..')
-    lastfilename = '1';
-else
-    lastfilenumber = str2num(fname(lastfilename));
-    lastfilenumber = lastfilenumber +1;
-    lastfilename = num2str(lastfilenumber);
-end
+% fllist = dir(strcat(tmpdir1,'\',langname));
+% lastfile = fllist(length(fllist));
+% lastfilename = lastfile.name;
+% if strcmp(lastfilename,'..')
+%     lastfilename = '1';
+% else
+%     lastfilenumber = str2num(fname(lastfilename));
+%     lastfilenumber = lastfilenumber +1;
+%     lastfilename = num2str(lastfilenumber);
+% end
 
-folderselect = strcat(tmpdir1,'\',langname,'\',strcat(lastfilename,'.tif'));
+langfolder = strcat(tmpdir1,'\',langname);
+saveto = strcat(num2str(str2num(maxfilenum(langfolder))+1),'.tif');
+
+folderselect = strcat(langfolder,'\',saveto);
 imwrite(selected,folderselect,'tif');
 
-set(handles.outfilename,'String',strcat(lastfilename,'.tif'));
+set(handles.outfilename,'String',saveto);
 
 set(handles.langaccept,'TooltipString','tools');
 
@@ -182,63 +185,10 @@ if ((pos2x>pos1x) && (pos2y>pos1y))
         row = row + 1;
         col = 1;
     end
-    %%%%%%%%%%%%%%%%%%%%%%%%$$$   MINIMUM POSSIBLE AREA    $$$$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
- crop_image = selected;
- [R C] = size(crop_image);
- count=0;
- %%%%%%%%%  for minimum height  %%%%%%%%%%
- start_row =1;
- end_row = R;
-  for i=1:R
-     sum = 0;
-     for j=1:C
-         sum = sum + crop_image(i,j);
-     end
-     if (sum > 3 && count == 0)
-         start_row = i;count=1;  %%%%%%%GETTING THE START_ROW VALUE
-     end
-     if(sum<2 && count == 1)      %%%%%%%GETTING THE END_ROW VALUE
-         end_row = i;count=0;
-     end
-  end
- %%%%%%%   For MINIMUM BREADTH  %%%%%%%%%%%%% 
-   for c=1:C
-     sum=0;
-     for r = start_row:end_row
-         sum = sum + crop_image(r,c);
-     end
-     if(sum>4)
-         start_column = c;      %%%%%%%%%%GETING THE START_COLUMN VALUE
-         break;
-     end
-   end
-   for c=C:(-1):1
-     sum=0;
-     for r = start_row:end_row
-         sum = sum + crop_image(r,c);
-     end
-     
-     if(sum>4 )
-         end_column = c;       %%%%%%%%%%getting the end_column value
-         break;
-     end
-   end
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-crop_selected=zeros((end_row-start_row),(end_column-start_column));
-%%%%%%%%%%%     final crop selection      %%%%%%%%%%%%%%%%%%%%%%
-    col = 1;
-    row = 1;
-    for rowwise = start_column:end_column
-        for colwise = start_row:end_row
-            crop_selected(col,row) = crop_image(colwise,rowwise);
-            col = col+1;
-        end
-        row = row + 1;
-        col = 1;
-    end
-selected=crop_selected;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    selected = minarea(selected);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     axes(handles.cropped);
     imshow(selected)
 
@@ -405,13 +355,18 @@ for lineiter = 1:tlinenum(2)
             r = r + 1;
             c = 1;
         end
+        selected = minarea(selected);
 %        clear selected;
         handles.selected = selected;
         guidata(hObject,handles);
         axes(handles.cropped);
         imshow(selected)
-        % WAITFOR LANGACCEPT TO BE CALLED
-        waitfor(handles.langaccept,'TooltipString','tools');
+        ques = questdlg('Is the auto-selection correct ?','Auto-Selection'...
+            ,'Yes','No','Cancel','Yes');
+        if strcmp(ques,'Yes')
+            % WAITFOR LANGACCEPT TO BE CALLED
+            waitfor(handles.langaccept,'TooltipString','tools');
+        end
         set(handles.langaccept,'TooltipString','tool');
         worditer = worditer + 2;
     end
