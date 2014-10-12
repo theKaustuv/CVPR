@@ -13,7 +13,7 @@ function [ crop_selected ] = minarea( selected )
      for j=1:C
          sum = sum + crop_image(i,j);
      end
-     if (sum > 2 && count == 0)
+     if (sum > 3 && count == 0)
          start_row = i;count=1;  %%%%%%%GETTING THE START_ROW VALUE
      end
      if(sum<2 && count == 1)      %%%%%%%GETTING THE END_ROW VALUE
