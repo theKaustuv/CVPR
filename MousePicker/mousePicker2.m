@@ -70,7 +70,8 @@ function filename_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function filename_CreateFcn(hObject, eventdata, handles)
 
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'),...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
@@ -81,7 +82,8 @@ function langlist_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function langlist_CreateFcn(hObject, eventdata, handles)
 
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'),...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
@@ -209,7 +211,8 @@ function outfile_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function outfile_CreateFcn(hObject, eventdata, handles)
 
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+if ispc && isequal(get(hObject,'BackgroundColor'),...
+        get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
@@ -362,7 +365,7 @@ for lineiter = 1:tlinenum(2)
         axes(handles.cropped);
         imshow(selected)
         ques = questdlg('Is the auto-selection correct ?','Auto-Selection'...
-            ,'Yes','No','Cancel','Yes');
+            ,'Yes','No','Yes');
         if strcmp(ques,'Yes')
             % WAITFOR LANGACCEPT TO BE CALLED
             waitfor(handles.langaccept,'TooltipString','tools');
