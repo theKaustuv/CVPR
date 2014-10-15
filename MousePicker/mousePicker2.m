@@ -149,9 +149,18 @@ saveto = strcat(filenameonly,'_',num2str(handles.cropx1),...
     '.tif');
 
 folderselect = strcat(langfolder,'\',saveto);
-imwrite(selected,folderselect,'tif');
-
-set(handles.outfilename,'String',saveto);
+if exist(folderselect)==0
+     imwrite(selected,folderselect,'tif');
+     set(handles.outfilename,'String',saveto);
+elseif exist(folderselect)==2
+     resp = questdlg(strcat('The file named ',saveto,...
+         'already exists !!! Want to continue anyway ?'),...
+         'File Name Conflict','Yes','No','Yes');
+     if strcmp(resp,'Yes')
+        imwrite(selected,folderselect,'tif');
+        set(handles.outfilename,'String',saveto);
+     end
+end
 
 set(handles.langaccept,'TooltipString','tools');
 
