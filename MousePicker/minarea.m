@@ -1,4 +1,4 @@
-function [ crop_selected ] = minarea( selected )
+function [x1,y1,x2,y2,crop_selected ] = minarea( selected )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
  %%%%%%%%%%%%%%%%%%%%%%%%$$$   MINIMUM POSSIBLE AREA    $$$$%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
@@ -43,6 +43,12 @@ function [ crop_selected ] = minarea( selected )
      end
    end
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ x1=start_column;
+ y1=start_row;
+ x2=(C-end_column);
+ y2=(R-end_row); 
+ 
+ 
 crop_selected=zeros((end_row-start_row),(end_column-start_column));
 %%%%%%%%%%%     final crop selection      %%%%%%%%%%%%%%%%%%%%%%
     col = 1;
