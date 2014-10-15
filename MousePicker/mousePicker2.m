@@ -59,6 +59,8 @@ elseif existance==2
     imshow(image)
     handles.image = image;
     handles.impath = impath;
+    handles.prerow = 0;
+    handles.precol = 0;
     guidata(hObject,handles);
 
     set(handles.langlist,'Enable','off');
@@ -211,6 +213,7 @@ if ((pos2x>pos1x) && (pos2y>pos1y))
     clear selected
     set(handles.langlist,'Enable','on');
     set(handles.langaccept,'Enable','on');
+    set(handles.langaccept,'TooltipString','tool');
 else
     errordlg(...
         'Try to make the selection from Upper-Left to Lower-Right',...
@@ -359,41 +362,49 @@ worditer = 1;
 ques = 'Yes';
 
 for lineiter = 1:tlinenum(2)
-    for rowiter = 1:wordnumperlinearray(lineiter)
-        if strcmp(ques,'Yes') || strcmp(ques,'No')
-            c = 1;
-            r = 1;
-            selected = [];
-            for hlrow = wordpos(worditer):wordpos(worditer+1)
-                for hlcol = startline(lineiter):endline(lineiter)
-                    selected(c,r) = img(hlcol,hlrow);
-                    c = c + 1;
+    if lineiter>=handles.precol
+        for rowiter = 1:wordnumperlinearray(lineiter)
+            if rowiter>handles.prerow
+                if strcmp(ques,'Yes') || strcmp(ques,'No')
+                    c = 1;
+                    r = 1;
+                    selected = [];
+                    for hlrow = wordpos(worditer):wordpos(worditer+1)
+                        for hlcol = startline(lineiter):endline(lineiter)
+                            selected(c,r) = img(hlcol,hlrow);
+                            c = c + 1;
+                        end
+                        r = r + 1;
+                        c = 1;
+                    end
+                    selected = minarea(selected);
+            %        clear selected;
+                    handles.selected = selected;
+                    handles.cropx1 = wordpos(worditer);
+                    handles.cropx2 = wordpos(worditer+1);
+                    handles.cropy1 = startline(lineiter);
+                    handles.cropy2 = endline(lineiter);
+                    set(handles.c1x,'String',handles.cropx1);
+                    set(handles.c1y,'String',handles.cropy1);
+                    set(handles.c2x,'String',handles.cropx2);
+                    set(handles.c2y,'String',handles.cropy2);
+                    guidata(hObject,handles);
+                    axes(handles.cropped);
+                    imshow(selected)
+                    ques = questdlg('Is the auto-selection correct ?','Auto-Selection'...
+                        ,'Yes','No','Cancel','Yes');
+                    if strcmp(ques,'Yes')
+                        % WAITFOR LANGACCEPT TO BE CALLED
+                        waitfor(handles.langaccept,'TooltipString','tools');
+                    elseif strcmp(ques,'Cancel')
+                        handles.prerow = rowiter;
+                        handles.precol = lineiter;
+                        guidata(hObject,handles);
+                    end
+                    set(handles.langaccept,'TooltipString','tool');
+                    worditer = worditer + 2;
                 end
-                r = r + 1;
-                c = 1;
             end
-            selected = minarea(selected);
-    %        clear selected;
-            handles.selected = selected;
-            handles.cropx1 = wordpos(worditer);
-            handles.cropx2 = wordpos(worditer+1);
-            handles.cropy1 = startline(lineiter);
-            handles.cropy2 = endline(lineiter);
-            set(handles.c1x,'String',handles.cropx1);
-            set(handles.c1y,'String',handles.cropy1);
-            set(handles.c2x,'String',handles.cropx2);
-            set(handles.c2y,'String',handles.cropy2);
-            guidata(hObject,handles);
-            axes(handles.cropped);
-            imshow(selected)
-            ques = questdlg('Is the auto-selection correct ?','Auto-Selection'...
-                ,'Yes','No','Cancel','Yes');
-            if strcmp(ques,'Yes')
-                % WAITFOR LANGACCEPT TO BE CALLED
-                waitfor(handles.langaccept,'TooltipString','tools');
-            end
-            set(handles.langaccept,'TooltipString','tool');
-            worditer = worditer + 2;
         end
     end
 end
