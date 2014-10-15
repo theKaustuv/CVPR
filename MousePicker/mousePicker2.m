@@ -182,16 +182,16 @@ pos1y = floor(recorded(1,2));  % 1st position - Y coordinate
 pos2x = floor(recorded(2,1));  % 2nd position - X coordinate
 pos2y = floor(recorded(2,2));  % 2nd position - Y coordinate
 
-handles.cropx1 = pos1x;
-handles.cropx2 = pos2x;
-handles.cropy1 = pos1y;
-handles.cropy2 = pos2y;
-guidata(hObject,handles);
+% handles.cropx1 = pos1x;
+% handles.cropx2 = pos2x;
+% handles.cropy1 = pos1y;
+% handles.cropy2 = pos2y;
+% guidata(hObject,handles);
 
-set(handles.c1x,'String',pos1x);
-set(handles.c1y,'String',pos1y);
-set(handles.c2x,'String',pos2x);
-set(handles.c2y,'String',pos2y);
+% set(handles.c1x,'String',pos1x);
+% set(handles.c1y,'String',pos1y);
+% set(handles.c2x,'String',pos2x);
+% set(handles.c2y,'String',pos2y);
 
 %set(handles.cropped,'Visible','on');
 
@@ -209,11 +209,31 @@ if ((pos2x>pos1x) && (pos2y>pos1y))
         col = 1;
     end
     
-    selected = minarea(selected);
+    [off1x,off1y,off2x,off2y,selected] = minarea(selected);
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     axes(handles.cropped);
     imshow(selected)
+    
+    pos1x = pos1x + off1x;
+    pos1y = pos1y + off1y;
+    pos2x = pos2x - off2x;
+    pos2y = pos2y - off2y;
+    
+    
+    handles.cropx1 = pos1x;
+    handles.cropx2 = pos2x;
+    handles.cropy1 = pos1y;
+    handles.cropy2 = pos2y;
+    guidata(hObject,handles);
+    
+    set(handles.c1x,'String',pos1x);
+    set(handles.c1y,'String',pos1y);
+    set(handles.c2x,'String',pos2x);
+    set(handles.c2y,'String',pos2y);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     axes(handles.cropped);
+%     imshow(selected)
 
     handles.selected = selected;
     guidata(hObject,handles);
@@ -381,13 +401,13 @@ for lineiter = 1:tlinenum(2)
                 r = r + 1;
                 c = 1;
             end
-            selected = minarea(selected);
+            [off1x,off1y,off2x,off2y,selected] = minarea(selected);
     %        clear selected;
             handles.selected = selected;
-            handles.cropx1 = wordpos(worditer);
-            handles.cropx2 = wordpos(worditer+1);
-            handles.cropy1 = startline(lineiter);
-            handles.cropy2 = endline(lineiter);
+            handles.cropx1 = wordpos(worditer) + off1x;
+            handles.cropx2 = wordpos(worditer+1) - off2x;
+            handles.cropy1 = startline(lineiter) + off1y;
+            handles.cropy2 = endline(lineiter) - off2y;
             set(handles.c1x,'String',handles.cropx1);
             set(handles.c1y,'String',handles.cropy1);
             set(handles.c2x,'String',handles.cropx2);
