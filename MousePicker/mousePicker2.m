@@ -58,6 +58,7 @@ elseif existance==2
     axes(handles.original);
     imshow(image)
     handles.image = image;
+    handles.impath = impath;
     guidata(hObject,handles);
 
     set(handles.langlist,'Enable','off');
@@ -140,7 +141,12 @@ tmpdir1 = fileparts(tmppath);
 % end
 
 langfolder = strcat(tmpdir1,'\',langname);
-saveto = strcat(num2str(str2num(maxfilenum(langfolder))+1),'.tif');
+[pth filenameonly] = fileparts(handles.impath);
+clear pth;
+saveto = strcat(filenameonly,'_',num2str(handles.cropx1),...
+    '_',num2str(handles.cropy1),'_',num2str(handles.cropx2),...
+    '_',num2str(handles.cropy2),...
+    '.tif');
 
 folderselect = strcat(langfolder,'\',saveto);
 imwrite(selected,folderselect,'tif');
@@ -166,6 +172,12 @@ pos1x = floor(recorded(1,1));  % 1st position - X coordinate
 pos1y = floor(recorded(1,2));  % 1st position - Y coordinate
 pos2x = floor(recorded(2,1));  % 2nd position - X coordinate
 pos2y = floor(recorded(2,2));  % 2nd position - Y coordinate
+
+handles.cropx1 = pos1x;
+handles.cropx2 = pos2x;
+handles.cropy1 = pos1y;
+handles.cropy2 = pos2y;
+guidata(hObject,handles);
 
 set(handles.c1x,'String',pos1x);
 set(handles.c1y,'String',pos1y);
@@ -344,33 +356,44 @@ for totalline = 1:tlinenum(2)
 end
 
 worditer = 1;
+ques = 'Yes';
 
 for lineiter = 1:tlinenum(2)
     for rowiter = 1:wordnumperlinearray(lineiter)
-        c = 1;
-        r = 1;
-        selected = [];
-        for hlrow = wordpos(worditer):wordpos(worditer+1)
-            for hlcol = startline(lineiter):endline(lineiter)
-                selected(c,r) = img(hlcol,hlrow);
-                c = c + 1;
-            end
-            r = r + 1;
+        if strcmp(ques,'Yes') || strcmp(ques,'No')
             c = 1;
+            r = 1;
+            selected = [];
+            for hlrow = wordpos(worditer):wordpos(worditer+1)
+                for hlcol = startline(lineiter):endline(lineiter)
+                    selected(c,r) = img(hlcol,hlrow);
+                    c = c + 1;
+                end
+                r = r + 1;
+                c = 1;
+            end
+            selected = minarea(selected);
+    %        clear selected;
+            handles.selected = selected;
+            handles.cropx1 = wordpos(worditer);
+            handles.cropx2 = wordpos(worditer+1);
+            handles.cropy1 = startline(lineiter);
+            handles.cropy2 = endline(lineiter);
+            set(handles.c1x,'String',handles.cropx1);
+            set(handles.c1y,'String',handles.cropy1);
+            set(handles.c2x,'String',handles.cropx2);
+            set(handles.c2y,'String',handles.cropy2);
+            guidata(hObject,handles);
+            axes(handles.cropped);
+            imshow(selected)
+            ques = questdlg('Is the auto-selection correct ?','Auto-Selection'...
+                ,'Yes','No','Cancel','Yes');
+            if strcmp(ques,'Yes')
+                % WAITFOR LANGACCEPT TO BE CALLED
+                waitfor(handles.langaccept,'TooltipString','tools');
+            end
+            set(handles.langaccept,'TooltipString','tool');
+            worditer = worditer + 2;
         end
-        selected = minarea(selected);
-%        clear selected;
-        handles.selected = selected;
-        guidata(hObject,handles);
-        axes(handles.cropped);
-        imshow(selected)
-        ques = questdlg('Is the auto-selection correct ?','Auto-Selection'...
-            ,'Yes','No','Yes');
-        if strcmp(ques,'Yes')
-            % WAITFOR LANGACCEPT TO BE CALLED
-            waitfor(handles.langaccept,'TooltipString','tools');
-        end
-        set(handles.langaccept,'TooltipString','tool');
-        worditer = worditer + 2;
     end
 end
