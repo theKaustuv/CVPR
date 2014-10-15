@@ -129,19 +129,9 @@ end
 
 tmppath = mfilename('fullpath');
 tmpdir1 = fileparts(tmppath);
-% fllist = dir(strcat(tmpdir1,'\',langname));
-% lastfile = fllist(length(fllist));
-% lastfilename = lastfile.name;
-% if strcmp(lastfilename,'..')
-%     lastfilename = '1';
-% else
-%     lastfilenumber = str2num(fname(lastfilename));
-%     lastfilenumber = lastfilenumber +1;
-%     lastfilename = num2str(lastfilenumber);
-% end
 
 langfolder = strcat(tmpdir1,'\',langname);
-[pth filenameonly] = fileparts(handles.impath);
+[pth,filenameonly] = fileparts(handles.impath);
 clear pth;
 saveto = strcat(filenameonly,'_',num2str(handles.cropx1),...
     '_',num2str(handles.cropy1),'_',num2str(handles.cropx2),...
@@ -153,8 +143,8 @@ if exist(folderselect)==0
      imwrite(selected,folderselect,'tif');
      set(handles.outfilename,'String',saveto);
 elseif exist(folderselect)==2
-     resp = questdlg(strcat('The file named ',saveto,...
-         'already exists !!! Want to continue anyway ?'),...
+     resp = questdlg(strcat('The file already exists !!! Maybe you have selected this before',...
+         '. Want to continue anyway (OverWrite)?'),...
          'File Name Conflict','Yes','No','Yes');
      if strcmp(resp,'Yes')
         imwrite(selected,folderselect,'tif');
@@ -182,16 +172,6 @@ pos1y = floor(recorded(1,2));  % 1st position - Y coordinate
 pos2x = floor(recorded(2,1));  % 2nd position - X coordinate
 pos2y = floor(recorded(2,2));  % 2nd position - Y coordinate
 
-% handles.cropx1 = pos1x;
-% handles.cropx2 = pos2x;
-% handles.cropy1 = pos1y;
-% handles.cropy2 = pos2y;
-% guidata(hObject,handles);
-
-% set(handles.c1x,'String',pos1x);
-% set(handles.c1y,'String',pos1y);
-% set(handles.c2x,'String',pos2x);
-% set(handles.c2y,'String',pos2y);
 
 %set(handles.cropped,'Visible','on');
 
